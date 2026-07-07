@@ -25,3 +25,85 @@ func main() {
     // Output: bool
     fmt.Printf("%T\n", value)
 }
+
+// chan bool is a built-in Go type. It is not the value being sent; it is the communication mechanism that transports values.
+
+// In this example:
+
+// ch <- true
+// ch is the channel (the pipe/mailbox).
+// bool is the type of value that the channel can carry.
+// true is the actual value being sent.
+
+
+// Primitive	Purpose
+// Goroutine	A concurrency primitive for executing code concurrently.
+// Channel	A communication and synchronization primitive for passing data between goroutines.
+// WaitGroup	A synchronization primitive for waiting until a set of goroutines has completed.
+
+//select keyword. It's like switch for channels.
+select {
+case value := <-ch1:
+    fmt.Println("Received:", value)
+
+case value := <-ch2:
+    fmt.Println("Received:", value)
+}
+
+//Mutex. Lock count if many goroutines are going to increase it 
+var (
+    mu    sync.Mutex
+    count int
+)
+
+go func() {
+    mu.Lock()
+    count++
+    mu.Unlock()
+}()
+
+
+// Mutex
+
+// Use when:
+
+// multiple goroutines share a data structure
+// you need to protect maps, slices, or structs
+// Atomic
+
+// Use when:
+
+// you're updating one variable
+// counters
+// flags
+// statistics
+// pointers
+
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    channels := make([]chan bool, 3)
+
+    for i := range channels {
+        channels[i] = make(chan bool)
+
+        go func(id int, ch chan bool) {
+            time.Sleep(time.Duration(id) * time.Second)
+
+            fmt.Println("Worker", id, "finished")
+
+            ch <- true
+        }(i, channels[i])
+    }
+
+    for _, ch := range channels {
+        <-ch
+    }
+
+    fmt.Println("Everyone is done!")
+}
