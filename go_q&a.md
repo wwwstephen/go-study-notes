@@ -264,3 +264,15 @@ Key points:
 - Code inside the same package can access unexported identifiers
 - Exported identifiers start with a capital letter
 - Used to structure Go projects cleanly
+
+## Can I declare and assign in Golang without using the := operator.
+
+Yes, you can declare a variable and assign a value in one step without using := by using the var keyword:
+
+```go
+var name string = "Alice"
+// However, Go also allows type inference with var, so you can omit the type:
+
+var name = "Alice"  // Go infers the type as string
+```
+
