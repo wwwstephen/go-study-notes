@@ -276,3 +276,52 @@ var name string = "Alice"
 var name = "Alice"  // Go infers the type as string
 ```
 
+## Stack vs Heap
+
+An analogy: think of a hotel.
+
+**Stack** — you always get the room at the top of the current floor.
+
+```
+Checkout
+   ⬆
+Room 103
+Room 102
+Room 101
+```
+
+When you leave, the next guest gets Room 103. Very simple: allocation and
+deallocation just move a pointer up or down.
+
+**Heap** — you can book any available room in the entire hotel.
+
+```
+101 Occupied
+102 Free
+103 Occupied
+104 Free
+105 Occupied
+...
+```
+
+The hotel has to search for an available room, mark it occupied, and later
+clean it after you check out. More flexible, but more work.
+
+Function-scoped variables are on the stack (unless they escape — e.g. a
+pointer to them is returned or captured — in which case Go's escape analysis
+moves them to the heap).
+
+## Handling Long-Running Operations with Riverqueue
+
+**Q: You have a system where users can trigger long-running operations (for
+example, generating reports, processing files, or running data exports).
+These operations can take several minutes, and many users may trigger them
+at the same time. How would you use Riverqueue to handle this concurrently
+while allowing users to track their requests?**
+
+I'd use Riverqueue as an asynchronous job processor. When a request comes
+in, I create an operation ID, enqueue a River job containing that ID, and
+return the ID immediately. Multiple River workers process jobs concurrently.
+The worker updates the operation status in the database, and the client
+polls or subscribes using the operation ID to track progress and
+completion.
